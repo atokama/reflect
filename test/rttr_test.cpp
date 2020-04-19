@@ -24,10 +24,13 @@ Car car_obj{"yellow", 4};
 Traffic traffic_obj{car_obj, 100};
 
 //template <typename T>
-string serialize(rttr::variant obj) {//(const T& obj) {
+string serialize(rttr::variant obj, unsigned nest = 0) {//(const T& obj) {
+    static const string obj_indent(4, ' ');
+    const string indent(nest * 4, ' ');
     std::stringstream ss{};
+    ss << "{\n";
     for (auto& prop : rttr::type::get(obj).get_properties()) {
-        ss << prop.get_name() << ": ";
+        ss << indent << obj_indent << prop.get_name() << ": ";
 
         auto type = prop.get_type();
         if (type == rttr::type::get<int>()) {
@@ -35,28 +38,34 @@ string serialize(rttr::variant obj) {//(const T& obj) {
         } else if (type == rttr::type::get<string>()) {
             ss << "\"" << prop.get_value(obj).to_string() << "\"";
         } else {
-            ss << serialize(prop.get_value(obj));
+            ss << serialize(prop.get_value(obj), nest + 1);
         }
-        ss << endl;
+        ss << "\n";
     }
+    ss << indent << "}";
     return ss.str();
 }
 
-TEST(rttr_test, 1) {
-    string actual = serialize(traffic_obj);
+TEST(rttr_test, serialize_flat_obj) {
+    string actual = serialize(car_obj);
     string expected =
-            "car: color: \"yellow\"\n"
-            "num_wheels: 4\n"
-            "\n"
-            "bandwidth: 100\n";
+            "{\n"
+            "    color: \"yellow\"\n"
+            "    num_wheels: 4\n"
+            "}";
+
     ASSERT_EQ(actual, expected);
 }
 
-TEST(rttr_test, serialize_car) {
-    string actual = serialize(car_obj);
+TEST(rttr_test, serialize_compound_obj) {
+    string actual = serialize(traffic_obj);
     string expected =
-            "color: \"yellow\"\n"
-            "num_wheels: 4\n";
-
+            "{\n"
+            "    car: {\n"
+            "        color: \"yellow\"\n"
+            "        num_wheels: 4\n"
+            "    }\n"
+            "    bandwidth: 100\n"
+            "}";
     ASSERT_EQ(actual, expected);
 }
