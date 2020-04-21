@@ -17,13 +17,22 @@ add_subdirectory(../rttr rttr)
 
 find_package(RapidJSON REQUIRED)
 
+add_library(reflect
+    include/reflect/serialize.h
+    include/reflect/deserialize.h
+    src/serialize.cpp)
+
+target_include_directories(reflect PUBLIC
+    include
+    ${RAPIDJSON_INCLUDE_DIRS})
+
+target_link_libraries(reflect rttr_core)
+
 find_package(GTest REQUIRED)
 
 add_executable(reflect_test
     test/gtest_main.cpp
     test/rttr_test.cpp)
 
-target_include_directories(reflect_test PUBLIC ${RAPIDJSON_INCLUDE_DIRS})
-
-target_link_libraries(reflect_test rttr_core gtest)
+target_link_libraries(reflect_test reflect gtest)
 
