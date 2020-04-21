@@ -9,6 +9,9 @@ using std::string;
 struct Car { string color; int num_wheels; };
 struct Traffic { Car car; int bandwidth; };
 
+bool operator==(const Car &l, const Car &r) { return l.color == r.color && l.num_wheels == r.num_wheels; }
+bool operator==(const Traffic &l, const Traffic &r) { return l.car == r.car && l.bandwidth == r.bandwidth; }
+
 RTTR_REGISTRATION {
      rttr::registration::class_<Car>("Car")
              .constructor<>()
@@ -44,6 +47,22 @@ string serialize(rttr::variant obj, unsigned nest = 0) {//(const T& obj) {
     }
     ss << indent << "}";
     return ss.str();
+}
+
+template <typename T>
+T deserialize_car(const string &json) {
+    auto type = rttr::type::get<T>();
+    auto var = type.create();
+    type.get_property("color").set_value(var, string{"red"});
+    type.get_property("num_wheels").set_value(var, 2);
+    auto &obj = var.template get_value<std::shared_ptr<T>>();
+    return T{*obj};
+}
+
+TEST(rttr_test, deserialize_car) {
+    Car actual = deserialize_car<Car>("");
+    Car expected{"red", 2};
+    ASSERT_EQ(actual, expected);
 }
 
 TEST(rttr_test, serialize_flat_obj) {
