@@ -17,11 +17,11 @@ bool operator==(const Traffic &l, const Traffic &r) { return l.car == r.car && l
 
 RTTR_REGISTRATION {
      rttr::registration::class_<Car>("Car")
-             .constructor<>()
+             .constructor<>()(rttr::policy::ctor::as_object)
              .property("color", &Car::color)
              .property("num_wheels", &Car::num_wheels);
      rttr::registration::class_<Traffic>("Traffic")
-             .constructor<>()
+             .constructor<>()(rttr::policy::ctor::as_object)
              .property("car", &Traffic::car)
              .property("bandwidth", &Traffic::bandwidth);
 }
@@ -29,7 +29,7 @@ RTTR_REGISTRATION {
 Car car_obj{"yellow", 4};
 Traffic traffic_obj{car_obj, 100};
 
-TEST(rttr_test, deserialize_car) {
+TEST(rttr_test, deserialize_flat_obj) {
     string car_json =
             "{\n"
             "    \"color\": \"yellow\",\n"
@@ -37,6 +37,20 @@ TEST(rttr_test, deserialize_car) {
             "}";
     Car actual = deserialize<Car>(car_json);
     ASSERT_EQ(actual, car_obj);
+}
+
+TEST(rttr_test, deserialize_compound_obj) {
+    string traffic_json{
+        "{\n"
+        "  \"car\": {\n"
+        "    \"color\": \"yellow\",\n"
+        "    \"num_wheels\": 4\n"
+        "  }, \n"
+        "  \"bandwidth\": 100\n"
+        "}"};
+    Traffic actual = deserialize<Traffic>(traffic_json);
+    Traffic expected{Car{"yellow", 4}, 100};
+    ASSERT_EQ(actual, expected);
 }
 
 TEST(rttr_test, serialize_flat_obj) {

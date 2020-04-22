@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdexcept>
 #include <rttr/type>
 #include <rapidjson/document.h>
@@ -18,15 +20,15 @@ rttr::variant desererialize_object(const rapidjson::Value& json, rttr::type type
         }
 
         auto &val = json[name.data()];
-        const auto type = prop.get_type();
-        if (type == rttr::type::get<int>()) {
+        const auto type2 = prop.get_type();
+        if (type2 == rttr::type::get<int>()) {
             prop.set_value(var, val.GetInt());
-        } else if (type == rttr::type::get<std::string>()) {
+        } else if (type2 == rttr::type::get<std::string>()) {
             prop.set_value(var, std::string{val.GetString()});
-        } else {
-//            auto type2 = prop.get_type();
-//            auto var2 = desererialize_object(val, type2);
-//            prop.set_value(var, var2);
+        } else if (type2.is_class()){
+            auto type3 = prop.get_type();
+            auto var2 = desererialize_object(val, type3);
+            prop.set_value(var, var2);
         }
     }
     return var;
@@ -50,8 +52,8 @@ T deserialize(const std::string &json) {
     } else {
     }
 
-    auto &obj = var.template get_value<std::shared_ptr<T>>();
-    return T{*obj};
+    auto &obj = var.template get_value<T>();
+    return T{obj};
 }
 
 }

@@ -35,4 +35,3 @@ add_executable(reflect_test
     test/rttr_test.cpp)
 
 target_link_libraries(reflect_test reflect gtest)
-
