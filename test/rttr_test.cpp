@@ -30,9 +30,13 @@ Car car_obj{"yellow", 4};
 Traffic traffic_obj{car_obj, 100};
 
 TEST(rttr_test, deserialize_car) {
-    Car actual = deserialize_car<Car>("");
-    Car expected{"red", 2};
-    ASSERT_EQ(actual, expected);
+    string car_json =
+            "{\n"
+            "    \"color\": \"yellow\",\n"
+            "    \"num_wheels\": 4\n"
+            "}";
+    Car actual = deserialize<Car>(car_json);
+    ASSERT_EQ(actual, car_obj);
 }
 
 TEST(rttr_test, serialize_flat_obj) {
