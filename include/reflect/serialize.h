@@ -53,6 +53,9 @@ void serialize_object(const rttr::variant &var, PrettyWriter &writer) {
         } else if (type == rttr::type::get<std::string>()) {
             const std::string val = prop.get_value(var).to_string();
             write_string(writer, val);
+        } else if (type.is_class()) {
+            const auto var2 = prop.get_value(var);
+            serialize_object(var2, writer);
         } else {
         }
     }

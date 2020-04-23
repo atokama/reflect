@@ -65,14 +65,14 @@ TEST(rttr_test, serialize_flat_obj) {
 }
 
 TEST(rttr_test, serialize_compound_obj) {
-    string actual = serialize(traffic_obj);
+    string actual = serialize_rapidjson(traffic_obj);
     string expected =
             "{\n"
-            "    car: {\n"
-            "        color: \"yellow\"\n"
-            "        num_wheels: 4\n"
-            "    }\n"
-            "    bandwidth: 100\n"
+            "    \"car\": {\n"
+            "        \"color\": \"yellow\",\n"
+            "        \"num_wheels\": 4\n"
+            "    },\n"
+            "    \"bandwidth\": 100\n"
             "}";
     ASSERT_EQ(actual, expected);
 }
