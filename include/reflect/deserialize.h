@@ -8,7 +8,7 @@
 
 namespace reflect {
 
-rttr::variant desererialize_object(const rapidjson::Value& json, rttr::type type) {
+rttr::variant deserialize_object(const rapidjson::Value& json, rttr::type type) {
     auto var = type.create();
     for (auto& prop : type.get_properties()) {
         const auto name = prop.get_name();
@@ -24,7 +24,7 @@ rttr::variant desererialize_object(const rapidjson::Value& json, rttr::type type
             prop.set_value(var, std::string{val.GetString()});
         } else if (type2.is_class()){
             auto type3 = prop.get_type();
-            auto var2 = desererialize_object(val, type3);
+            auto var2 = deserialize_object(val, type3);
             prop.set_value(var, var2);
         }
     }
@@ -43,7 +43,7 @@ T deserialize(const std::string &json) {
     rttr::variant var{};
 
     if (type.is_class()) {
-        var = desererialize_object(doc, type);
+        var = deserialize_object(doc, type);
     } else if (type.is_sequential_container()) {
 
     } else {

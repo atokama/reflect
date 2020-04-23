@@ -54,11 +54,11 @@ TEST(rttr_test, deserialize_compound_obj) {
 }
 
 TEST(rttr_test, serialize_flat_obj) {
-    string actual = serialize(car_obj);
+    string actual = serialize_rapidjson(car_obj);
     string expected =
             "{\n"
-            "    color: \"yellow\"\n"
-            "    num_wheels: 4\n"
+            "    \"color\": \"yellow\",\n"
+            "    \"num_wheels\": 4\n"
             "}";
 
     ASSERT_EQ(actual, expected);
