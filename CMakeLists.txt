@@ -20,6 +20,7 @@ find_package(RapidJSON REQUIRED)
 add_library(reflect
     include/reflect/serialize.h
     include/reflect/deserialize.h
+    include/reflect/error.h
     src/serialize.cpp)
 
 target_include_directories(reflect PUBLIC

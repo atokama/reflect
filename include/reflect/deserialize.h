@@ -4,12 +4,9 @@
 #include <rttr/type>
 #include <rapidjson/document.h>
 
-namespace reflect {
+#include <reflect/error.h>
 
-class Error : public std::runtime_error {
-public:
-    Error(const std::string &message) : std::runtime_error{message} {}
-};
+namespace reflect {
 
 rttr::variant desererialize_object(const rapidjson::Value& json, rttr::type type) {
     auto var = type.create();
