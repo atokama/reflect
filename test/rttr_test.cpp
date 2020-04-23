@@ -29,6 +29,23 @@ RTTR_REGISTRATION {
 Car car_obj{"yellow", 4};
 Traffic traffic_obj{car_obj, 100};
 
+TEST(rttr_test, serialize_array_of_obj) {
+    std::vector<Car> cars{Car{"a", 1}, Car{"b", 2}};
+    string expected{
+        "[\n"
+        "    {\n"
+        "        \"color\": \"a\",\n"
+        "        \"num_wheels\": 1\n"
+        "    },\n"
+        "    {\n"
+        "        \"color\": \"b\",\n"
+        "        \"num_wheels\": 2\n"
+        "    }\n"
+        "]"};
+    string actual = serialize_rapidjson(cars);
+    ASSERT_EQ(actual, expected);
+}
+
 TEST(rttr_test, deserialize_flat_obj) {
     string car_json =
             "{\n"

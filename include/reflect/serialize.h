@@ -34,34 +34,70 @@ std::string serialize(rttr::variant obj, unsigned nest = 0) {//(const T& obj) {
     return ss.str();
 }
 
+void serialize_array(const rttr::variant &var, PrettyWriter &writer);
+
 bool write_string(PrettyWriter &writer, const std::string &str) {
     return writer.String(str.c_str(),
                          static_cast<rapidjson::SizeType>(str.length()));
 }
 
+
 void serialize_object(const rttr::variant &var, PrettyWriter &writer) {
     writer.StartObject();
 
-    for (auto& prop : rttr::type::get(var).get_properties()) {
+    const auto t = rttr::type::get(var);
+    const auto type = t.is_wrapper() ? t.get_wrapped_type() : t;
+
+    for (auto& prop : type.get_properties()) {
+
         const std::string name{prop.get_name()};
         write_string(writer, name);
 
-        auto type = prop.get_type();
-        if (type == rttr::type::get<int>()) {
+        const auto type2 = prop.get_type();
+        if (type2 == rttr::type::get<int>()) {
             const int val = prop.get_value(var).to_int();
             writer.Int(val);
-        } else if (type == rttr::type::get<std::string>()) {
+        } else if (type2 == rttr::type::get<std::string>()) {
             const std::string val = prop.get_value(var).to_string();
             write_string(writer, val);
-        } else if (type.is_class()) {
+        } else if (type2.is_class()) {
             const auto var2 = prop.get_value(var);
             serialize_object(var2, writer);
+        } else if (type2.is_sequential_container()){
+            const auto var2 = prop.get_value(var);
+            serialize_array(var2, writer);
         } else {
+            throw Error{"serialize_object(): Unsupported type: " + std::string{type2.get_name()}};
         }
     }
 
     writer.EndObject();
+}
 
+void serialize_array(const rttr::variant &var, PrettyWriter &writer) {
+    writer.StartArray();
+    const auto arr = var.create_sequential_view();
+    for (const auto item : arr) {
+
+        const auto t = item.get_type();
+        const auto type = t.is_wrapper() ? t.get_wrapped_type() : t;
+
+        if (type == rttr::type::get<int>()) {
+            const int val = item.to_int();
+            writer.Int(val);
+        } else if (type == rttr::type::get<std::string>()) {
+            const std::string val = item.to_string();
+            write_string(writer, val);
+        } else if (type.is_sequential_container()){
+            serialize_array(item, writer);
+        } else if (type.is_class()) {
+            serialize_object(item, writer);
+        } else {
+            throw Error{"serialize_object(): Unsupported type: " + std::string{type.get_name()}};
+        }
+
+    }
+    writer.EndArray();
 }
 
 std::string serialize_rapidjson(rttr::variant var) {
@@ -74,12 +110,12 @@ std::string serialize_rapidjson(rttr::variant var) {
 
     const auto type = var.get_type();
 
-    if (type.is_class()) {
+    if (type.is_sequential_container()) {
+        serialize_array(var, writer);
+    } else if (type.is_class()) {
         serialize_object(var, writer);
-    } else if (type.is_sequential_container()) {
-
     } else {
-        throw Error{std::string{"Bad type of JSON root object: "} + type.get_name()};
+        throw Error{"Bad type of JSON root object: " + std::string{type.get_name()}};
     }
 
     return sb.GetString();
