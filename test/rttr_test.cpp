@@ -42,7 +42,7 @@ TEST(rttr_test, serialize_array_of_obj) {
         "        \"num_wheels\": 2\n"
         "    }\n"
         "]"};
-    string actual = serialize_rapidjson(cars);
+    string actual = serialize(cars);
     ASSERT_EQ(actual, expected);
 }
 
@@ -71,7 +71,7 @@ TEST(rttr_test, deserialize_compound_obj) {
 }
 
 TEST(rttr_test, serialize_flat_obj) {
-    string actual = serialize_rapidjson(car_obj);
+    string actual = serialize(car_obj);
     string expected =
             "{\n"
             "    \"color\": \"yellow\",\n"
@@ -82,7 +82,7 @@ TEST(rttr_test, serialize_flat_obj) {
 }
 
 TEST(rttr_test, serialize_compound_obj) {
-    string actual = serialize_rapidjson(traffic_obj);
+    string actual = serialize(traffic_obj);
     string expected =
             "{\n"
             "    \"car\": {\n"

@@ -11,29 +11,6 @@ namespace reflect {
 
 using PrettyWriter = rapidjson::PrettyWriter<rapidjson::StringBuffer>;
 
-//template <typename T>
-std::string serialize(rttr::variant obj, unsigned nest = 0) {//(const T& obj) {
-    static const std::string obj_indent(4, ' ');
-    const std::string indent(nest * 4, ' ');
-    std::stringstream ss{};
-    ss << "{\n";
-    for (auto& prop : rttr::type::get(obj).get_properties()) {
-        ss << indent << obj_indent << prop.get_name() << ": ";
-
-        auto type = prop.get_type();
-        if (type == rttr::type::get<int>()) {
-            ss << prop.get_value(obj).to_int();
-        } else if (type == rttr::type::get<std::string>()) {
-            ss << "\"" << prop.get_value(obj).to_string() << "\"";
-        } else {
-            ss << serialize(prop.get_value(obj), nest + 1);
-        }
-        ss << "\n";
-    }
-    ss << indent << "}";
-    return ss.str();
-}
-
 void serialize_array(const rttr::variant &var, PrettyWriter &writer);
 
 bool write_string(PrettyWriter &writer, const std::string &str) {
@@ -100,7 +77,7 @@ void serialize_array(const rttr::variant &var, PrettyWriter &writer) {
     writer.EndArray();
 }
 
-std::string serialize_rapidjson(rttr::variant var) {
+std::string serialize(rttr::variant var) {
     if (!var.is_valid()) {
         throw Error{"Can't serialize invalid object"};
     }
