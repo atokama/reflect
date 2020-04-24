@@ -37,12 +37,12 @@ void serialize_object(const rttr::variant &var, PrettyWriter &writer) {
         } else if (type2 == rttr::type::get<std::string>()) {
             const std::string val = prop.get_value(var).to_string();
             write_string(writer, val);
-        } else if (type2.is_class()) {
-            const auto var2 = prop.get_value(var);
-            serialize_object(var2, writer);
         } else if (type2.is_sequential_container()){
             const auto var2 = prop.get_value(var);
             serialize_array(var2, writer);
+        } else if (type2.is_class()) {
+            const auto var2 = prop.get_value(var);
+            serialize_object(var2, writer);
         } else {
             throw Error{"serialize_object(): Unsupported type: " + std::string{type2.get_name()}};
         }
