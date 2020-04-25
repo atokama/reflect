@@ -16,6 +16,8 @@ struct Road { std::vector<Car> cars; };
 
 bool operator==(const Car &l, const Car &r) { return l.color == r.color && l.num_wheels == r.num_wheels; }
 bool operator==(const Traffic &l, const Traffic &r) { return l.car == r.car && l.bandwidth == r.bandwidth; }
+bool operator==(const Highway &l, const Highway &r) { return l.miles == r.miles; }
+bool operator==(const Road &l, const Road &r) { return l.cars == r.cars; }
 
 RTTR_REGISTRATION {
      rttr::registration::class_<Car>("Car")
@@ -36,6 +38,20 @@ RTTR_REGISTRATION {
 
 Car car_obj{"yellow", 4};
 Traffic traffic_obj{car_obj, 100};
+
+TEST(rttr_test, deserialize_obj_with_array_of_integers) {
+    string highway_str {
+        "{\n    "
+        "\"miles\": [\n"
+        "        4,\n"
+        "        5,\n"
+        "        6\n"
+        "    ]\n"
+        "}"};
+    Highway actual = deserialize<Highway>(highway_str);
+    Highway expected{{4, 5, 6}};
+    ASSERT_EQ(actual, expected);
+}
 
 TEST(rttr_test, serialize_obj_with_array_of_objects) {
     Road road{{{"yellow", 4}, {"red", 6}, {"white", 6}}};
