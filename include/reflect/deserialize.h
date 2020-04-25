@@ -16,7 +16,10 @@ void deserialize_object(const rapidjson::Value &json, rttr::variant &var) {
         throw Error{""};
     }
 
-    for (auto& prop : var.get_type().get_properties()) {
+    const auto t = var.get_type();
+    const auto type = t.is_wrapper() ? t.get_wrapped_type() : t;
+
+    for (auto& prop : type.get_properties()) {
         const auto name = prop.get_name();
         if (!json.HasMember(name.data())) {
             continue;

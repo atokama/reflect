@@ -39,6 +39,29 @@ RTTR_REGISTRATION {
 Car car_obj{"yellow", 4};
 Traffic traffic_obj{car_obj, 100};
 
+TEST(rttr_test, deserialize_obj_with_array_of_objects) {
+    string road_str {
+        "{\n"
+        "    \"cars\": [\n"
+        "        {\n"
+        "            \"color\": \"yellow\",\n"
+        "            \"num_wheels\": 4\n"
+        "        },\n"
+        "        {\n"
+        "            \"color\": \"red\",\n"
+        "            \"num_wheels\": 6\n"
+        "        },\n"
+        "        {\n"
+        "            \"color\": \"white\",\n"
+        "            \"num_wheels\": 6\n"
+        "        }\n"
+        "    ]\n"
+        "}"};
+    Road actual = deserialize<Road>(road_str);
+    Road expected{{{"yellow", 4}, {"red", 6}, {"white", 6}}};
+    ASSERT_EQ(actual, expected);
+}
+
 TEST(rttr_test, deserialize_obj_with_array_of_integers) {
     string highway_str {
         "{\n    "
