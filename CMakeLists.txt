@@ -21,7 +21,8 @@ add_library(reflect
     include/reflect/serialize.h
     include/reflect/deserialize.h
     include/reflect/error.h
-    src/serialize.cpp)
+    src/serialize.cpp
+    src/deserialize.cpp)
 
 target_include_directories(reflect PUBLIC
     include
