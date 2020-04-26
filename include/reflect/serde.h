@@ -5,8 +5,6 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 
-#include <reflect/error.h>
-
 namespace reflect {
 
 class Error : public std::runtime_error {

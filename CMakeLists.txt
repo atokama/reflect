@@ -18,9 +18,7 @@ add_subdirectory(../rttr rttr)
 find_package(RapidJSON REQUIRED)
 
 add_library(reflect
-    include/reflect/serialize.h
-    include/reflect/deserialize.h
-    include/reflect/error.h
+    include/reflect/serde.h
     src/serialize.cpp
     src/deserialize.cpp)
 

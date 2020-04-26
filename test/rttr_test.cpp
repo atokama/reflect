@@ -1,5 +1,4 @@
-#include <reflect/serialize.h>
-#include <reflect/deserialize.h>
+#include <reflect/serde.h>
 #include <gtest/gtest.h>
 #include <rttr/registration>
 
