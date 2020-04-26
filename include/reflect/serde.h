@@ -1,12 +1,20 @@
 #pragma once
 
-#include <stdexcept>
+#include <sstream>
 #include <rttr/type>
 #include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
 
 #include <reflect/error.h>
 
 namespace reflect {
+
+class Error : public std::runtime_error {
+public:
+    Error(const std::string &message) : std::runtime_error{message} {}
+};
+
+std::string serialize(const rttr::variant &var);
 
 void deserialize_root(const std::string &json_str, rttr::variant &var);
 
